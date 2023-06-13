@@ -194,6 +194,25 @@ require('lazy').setup({
   {
     'iamcco/coc-angular'
   },
+  {
+    'nvim-telescope/telescope-media-files.nvim'
+  },
+  {
+    'nvim-lua/plenary.nvim'
+  },
+  {
+    'nvim-pack/nvim-spectre'
+  },
+  {
+    'folke/trouble.nvim'
+  }, 
+  {
+    'iamcco/markdown-preview.nvim'
+  },
+  {
+    'rebelot/kanagawa.nvim'
+  }
+  
     
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
@@ -222,7 +241,15 @@ vim.g.loaded_netrwPlugin = 1
 -- set termguicolors to enable highlight groups
 vim.opt.termguicolors = true
 
+require("trouble").setup({})
 
+require("kanagawa").setup({})
+
+vim.cmd("colorscheme kanagawa")
+
+vim.cmd("set number")
+
+require("nvim-web-devicons").setup({})
 
 
 require("prettier").setup({
@@ -360,7 +387,7 @@ vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { de
 -- See `:help nvim-treesitter`
 require('nvim-treesitter.configs').setup {
   -- Add languages to be installed here that you want installed for treesitter
-  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'typescript', 'help', 'vim' },
+  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'typescript', 'vimdoc', 'vim' },
 
   -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
   auto_install = false,
