@@ -221,11 +221,18 @@ require('lazy').setup({
     'folke/trouble.nvim'
   }, 
   {
-    'iamcco/markdown-preview.nvim'
+    'rebelot/kanagawa.nvim'
   },
   {
-    'rebelot/kanagawa.nvim'
-  }
+    "iamcco/markdown-preview.nvim",
+    ft = "markdown",
+    cmd = { "MarkdownPreview", "MarkdownPreviewStop" },
+    build = function()
+    vim.fn["mkdp#util#install"]()
+    end,
+  },
+  { "bluz71/vim-nightfly-colors", name = "nightfly", lazy = false, priority = 1000 },
+  
   
     
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
@@ -257,9 +264,11 @@ vim.opt.termguicolors = true
 
 require("trouble").setup({})
 
-require("kanagawa").setup({})
+-- require("kanagawa").setup({})
 
-vim.cmd("colorscheme kanagawa")
+vim.cmd("colorscheme nightfly")
+
+vim.api.nvim_set_option("clipboard","unnamed")
 
 vim.cmd("set number")
 
