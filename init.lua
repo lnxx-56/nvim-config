@@ -210,7 +210,21 @@ require('lazy').setup(
     -- debugger
     { "mfussenegger/nvim-dap" },
     { "rcarriga/nvim-dap-ui", requires = {"mfussenegger/nvim-dap"} },
-    { "theHamsta/nvim-dap-virtual-text" }
+    { "theHamsta/nvim-dap-virtual-text" },
+    { "kdheepak/lazygit.nvim",
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+        }
+    },
+    {
+      'OscarCreator/rsync.nvim',
+        build = 'make',
+        dependencies = 'nvim-lua/plenary.nvim',
+        sync_on_save = true,
+        config = function()
+          require("rsync").setup()
+        end,
+    }
   } 
 )
 
@@ -284,7 +298,7 @@ require("nvim-tree").setup({
     dotfiles = false,
   },
   view = {
-    width = 30,
+    width = 40,
     side = "left"
   }
 })
