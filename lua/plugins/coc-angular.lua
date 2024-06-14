@@ -1,0 +1,5 @@
+return {
+  {
+    'iamcco/coc-angular'
+  }
+}
