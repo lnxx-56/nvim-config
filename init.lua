@@ -21,14 +21,6 @@ local function get_plugins()
   return plugins
 end
 
--- Close the buffer when the file is simply closed
-vim.api.nvim_create_autocommand('WinClosed', {
-  callback = function(tbl)
-    vim.api.nvim_command('BufferClose ' .. tbl.buf)
-  end,
-  group = vim.api.nvim_create_augroup('barbar_close_buf', {})
-})
-
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system {
@@ -198,6 +190,14 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
   group = highlight_group,
   pattern = '*',
+})
+
+-- Close the buffer when the file is simply closed
+vim.api.nvim_create_autocmd('WinClosed', {
+  callback = function(tbl)
+    vim.api.nvim_command('BufferClose ' .. tbl.buf)
+  end,
+  group = vim.api.nvim_create_augroup('barbar_close_buf', {})
 })
 
 -- [[ Configure Telescope ]]
