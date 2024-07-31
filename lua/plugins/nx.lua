@@ -1,6 +1,8 @@
+-- use the original repository when the pr is merged!!!
+-- "Equilibris/nx.nvim",
 return {
   {
-    "Equilibris/nx.nvim",
+    "Sewb21/nx.nvim",
 
     dependencies = {
       "nvim-telescope/telescope.nvim",
@@ -13,7 +15,10 @@ return {
 
     -- Plugin will load when you use these keys
     keys = {
-      { "<leader>nx", "<cmd>Telescope nx actions<CR>", desc = "nx actions"}
+      { "<leader>nxa", "<cmd>Telescope nx actions<CR>", desc = "nx actions"},
+      { "<leader>nxg", "<cmd>Telescope nx generators<CR>", desc = "nx generators" }
     },
+
+    name = "nx"
   },
 }

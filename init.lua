@@ -1,44 +1,3 @@
---[[
-
-=====================================================================
-==================== READ THIS BEFORE CONTINUING ====================
-=====================================================================
-
-Kickstart.nvim is *not* a distribution.
-
-Kickstart.nvim is a template for your own configuration.
-  The goal is that you can read every line of code, top-to-bottom, and understand
-  what your configuration is doing.
-
-  Once you've done that, you should start exploring, configuring and tinkering to
-  explore Neovim!
-
-  If you don't know anything about Lua, I recommend taking some time to read through
-  a guide. One possible example:
-  - https://learnxinyminutes.com/docs/lua/
-
-  And then you can explore or search through `:help lua-guide`
-
-
-Kickstart Guide:
-
-I have left several `:help X` comments throughout the init.lua
-You should run that command and read that help section for more information.
-
-In addition, I have some `NOTE:` items throughout the file.
-These are for you, the reader to help understand what is happening. Feel free to delete
-them once you know what you're doing, but they should serve as a guide for when you
-are first encountering a few different constructs in your nvim config.
-
-I hope you enjoy your Neovim journey,
-- TJ
-
-P.S. You can delete this when you're done too. It's your config now :)
---]]
-
--- Set <space> as the leader key
--- See `:help mapleader`
---  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
@@ -62,9 +21,14 @@ local function get_plugins()
   return plugins
 end
 
--- Install package manager
---    https://github.com/folke/lazy.nvim
---    `:help lazy.nvim.txt` for more info
+-- Close the buffer when the file is simply closed
+vim.api.nvim_create_autocommand('WinClosed', {
+  callback = function(tbl)
+    vim.api.nvim_command('BufferClose ' .. tbl.buf)
+  end,
+  group = vim.api.nvim_create_augroup('barbar_close_buf', {})
+})
+
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system {
@@ -81,24 +45,22 @@ vim.opt.rtp:prepend(lazypath)
 -- Plugins are located in : lua/custom/plugins
 require('lazy').setup(get_plugins())
 
--- require('nx.nvim').setup{
---     -- Base command to run all other nx commands, some other values may be:
---     -- - `npm nx`
---     -- - `yarn nx`
---     -- - `pnpm nx`
---     nx_cmd_root = 'nx',
--- 
---     -- Command running capabilities,
---     -- see nx.m.command-runners for more details
---     command_runner = require('nx.command-runners').terminal_cmd(),
---     -- Form rendering capabilities,
---     -- see nx.m.form-renderers for more detials
---     form_renderer = require('nx.form-renderers').telescope(),
--- 
---     -- Whether or not to load nx configuration,
---     -- see nx.loading-and-reloading for more details
---     read_init = true,
--- }
+require('nx').setup({
+  -- Base command to run all other nx commands, some other values may be:
+  nx_cmd_root = 'nx',
+
+  -- Command running capabilities,
+  -- see nx.m.command-runners for more details
+  command_runner = require('nx.command-runners').terminal_cmd(),
+  -- Form rendering capabilities,
+  -- see nx.m.form-renderers for more detials
+  form_renderer = require('nx.form-renderers').telescope(),
+
+  -- Whether or not to load nx configuration,
+  -- see nx.loading-and-reloading for more details
+  read_init = true,
+})
+
 
 -- debugger
 --require("dap").setup({})
