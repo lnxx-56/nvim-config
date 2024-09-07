@@ -4,6 +4,7 @@ return {
   {
     "Sewb21/nx.nvim",
 
+    lazy = false,
     dependencies = {
       "nvim-telescope/telescope.nvim",
     },

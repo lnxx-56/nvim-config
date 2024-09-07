@@ -1,29 +1,50 @@
+--[[
+
+=====================================================================
+==================== READ THIS BEFORE CONTINUING ====================
+=====================================================================
+
+Kickstart.nvim is *not* a distribution.
+
+Kickstart.nvim is a template for your own configuration.
+  The goal is that you can read every line of code, top-to-bottom, and understand
+  what your configuration is doing.
+
+  Once you've done that, you should start exploring, configuring and tinkering to
+  explore Neovim!
+
+  If you don't know anything about Lua, I recommend taking some time to read through
+  a guide. One possible example:
+  - https://learnxinyminutes.com/docs/lua/
+
+  And then you can explore or search through `:help lua-guide`
+
+
+Kickstart Guide:
+
+I have left several `:help X` comments throughout the init.lua
+You should run that command and read that help section for more information.
+
+In addition, I have some `NOTE:` items throughout the file.
+These are for you, the reader to help understand what is happening. Feel free to delete
+them once you know what you're doing, but they should serve as a guide for when you
+are first encountering a few different constructs in your nvim config.
+
+I hope you enjoy your Neovim journey,
+- TJ
+
+P.S. You can delete this when you're done too. It's your config now :)
+--]]
+
+-- Set <space> as the leader key
+-- See `:help mapleader`
+--  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
--- 24-bit colors
-vim.opt.termguicolors = true
-
-local function get_plugins()
-  local plugins = {}
-  local plugins_path = vim.fn.stdpath('config') .. '/lua/plugins/'
-  local files = vim.fn.glob(plugins_path .. '*.lua', true, true)
-
-  for _, file in ipairs(files) do
-    if vim.fn.filereadable(file) == 1 then
-      local file_content = table.concat(vim.fn.readfile(file), "\n")
-    end
-    local plugin_spec = dofile(file)
-    if type(plugin_spec) == "table" then
-    	vim.list_extend(plugins, plugin_spec)
-    else
-    error("ERROR: cannot parse plugins file: " .. file .. " returned --> " .. plugin_spec)
-    end
-  end
-
-  return plugins
-end
-
+-- Install package manager
+--    https://github.com/folke/lazy.nvim
+--    `:help lazy.nvim.txt` for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system {
@@ -37,50 +58,221 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- Plugins are located in : lua/custom/plugins
-require('lazy').setup(get_plugins())
+-- NOTE: Here is where you install your plugins.
+--  You can configure plugins using the `config` key.
+--
+--  You can also configure plugins after the setup call,
+--    as they will be available in your neovim runtime.
+require('lazy').setup({
+  {'romgrk/barbar.nvim',
+    dependencies = {
+      'lewis6991/gitsigns.nvim', -- OPTIONAL: for git status
+      'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
+    },
+    init = function() vim.g.barbar_auto_setup = false end,
+    opts = {
+      -- lazy.nvim will automatically call setup for you. put your options here, anything missing will use the default:
+      -- animation = true,
+      -- insert_at_start = true,
+      -- …etc.
+    },
+    version = '^1.0.0', -- optional: only update when a new 1.x version is released
+  },
+  -- NOTE: First, some plugins that don't require any configuration
+    
+  -- Git related plugins
+  'tpope/vim-fugitive',
+  'tpope/vim-rhubarb',
 
-require('nx').setup({
-  -- Base command to run all other nx commands, some other values may be:
-  nx_cmd_root = 'nx',
+  -- Detect tabstop and shiftwidth automatically
+  'tpope/vim-sleuth',
 
-  -- Command running capabilities,
-  -- see nx.m.command-runners for more details
-  command_runner = require('nx.command-runners').terminal_cmd(),
-  -- Form rendering capabilities,
-  -- see nx.m.form-renderers for more detials
-  form_renderer = require('nx.form-renderers').telescope(),
+  -- NOTE: This is where your plugins related to LSP can be installed.
+  --  The configuration is done below. Search for lspconfig to find it below.
+  { -- LSP Configuration & Plugins
+    'neovim/nvim-lspconfig',
+    dependencies = {
+      -- Automatically install LSPs to stdpath for neovim
+      'williamboman/mason.nvim',
+      'williamboman/mason-lspconfig.nvim',
 
-  -- Whether or not to load nx configuration,
-  -- see nx.loading-and-reloading for more details
-  read_init = true,
-})
+      -- Useful status updates for LSP
+      -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
+      { 'j-hui/fidget.nvim', opts = {} },
 
--- bufferline
-require("bufferline").setup{}
+      -- Additional lua configuration, makes nvim stuff amazing!
+      'folke/neodev.nvim',
+    },
+  },
 
--- debugger
---require("dap").setup({})
+  { -- Autocompletion
+    'hrsh7th/nvim-cmp',
+    dependencies = { 'hrsh7th/cmp-nvim-lsp', 'L3MON4D3/LuaSnip', 'saadparwaiz1/cmp_luasnip' },
+  },
 
---local dap = require('dap')
+  -- Useful plugin to show you pending keybinds.
+  { 'folke/which-key.nvim', opts = {} },
+  { -- Adds git releated signs to the gutter, as well as utilities for managing changes
+    'lewis6991/gitsigns.nvim',
+    opts = {
+      -- See `:help gitsigns.txt`
+      signs = {
+        add = { text = '+' },
+        change = { text = '~' },
+        delete = { text = '_' },
+        topdelete = { text = '‾' },
+        changedelete = { text = '~' },
+      },
+    },
+  },
 
--- dap.adapters.cppdbg = {
---   id = 'cppdbg',
---   type = 'executable',
---   command = '/home/bence/nvim_extensions/cpp/extension/debugAdapters/bin/OpenDebugAD7',
--- }
--- dap.configurations.cppdbg = {
---   {
---     type = 'cpp';
---     request = 'launch';
---     name = 'Launch file';
---     program = "${file}"
---   }
--- }
+  { -- Theme inspired by Atom
+    'navarasu/onedark.nvim',
+    priority = 1000,
+    config = function()
+      vim.cmd.colorscheme 'onedark'
+    end,
+  },
 
-require('ibl').setup{};
+  { -- Set lualine as statusline
+    'nvim-lualine/lualine.nvim',
+    -- See `:help lualine.txt`
+    opts = {
+      options = {
+        icons_enabled = false,
+        theme = 'onedark',
+        component_separators = '|',
+        section_separators = '',
+      },
+    },
+  },
 
---require("dapui").setup({})
+  { -- Add indentation guides even on blank lines
+    'lukas-reineke/indent-blankline.nvim',
+    -- Enable `lukas-reineke/indent-blankline.nvim`
+    -- See `:help indent_blankline.txt`
+    opts = {
+      char = '┊',
+      show_trailing_blankline_indent = false,
+    },
+  },
+
+  -- "gc" to comment visual regions/lines
+  { 'numToStr/Comment.nvim', opts = {} },
+
+  -- Fuzzy Finder (files, lsp, etc)
+  { 'nvim-telescope/telescope.nvim', version = '*', dependencies = { 'nvim-lua/plenary.nvim' } },
+
+  -- Fuzzy Finder Algorithm which requires local dependencies to be built.
+  -- Only load if `make` is available. Make sure you have the system
+  -- requirements installed.
+  {
+    'nvim-telescope/telescope-fzf-native.nvim',
+    -- NOTE: If you are having trouble with this installation,
+    --       refer to the README for telescope-fzf-native for more instructions.
+    build = 'make',
+    cond = function()
+      return vim.fn.executable 'make' == 1
+    end,
+  },
+
+  { -- Highlight, edit, and navigate code
+    'nvim-treesitter/nvim-treesitter',
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter-textobjects',
+    },
+    config = function()
+      pcall(require('nvim-treesitter.install').update { with_sync = true })
+    end,
+  },
+
+  -- Custom plugins section
+  {
+    'sindrets/diffview.nvim'
+  },
+  
+  {
+    'nvim-tree/nvim-tree.lua'
+  },
+
+  {
+    'nvim-tree/nvim-web-devicons'
+  },
+  {
+    'jose-elias-alvarez/typescript.nvim'
+  },
+  
+  {
+    'MunifTanjim/prettier.nvim' 
+  },
+  {
+    'iamcco/coc-angular'
+  },
+  {
+    'nvim-telescope/telescope-media-files.nvim'
+  },
+  {
+    'nvim-lua/plenary.nvim'
+  },
+  {
+    'nvim-pack/nvim-spectre'
+  },
+  {
+    'folke/trouble.nvim'
+  }, 
+  {
+    'rebelot/kanagawa.nvim'
+  },
+  {
+    "iamcco/markdown-preview.nvim",
+    ft = "markdown",
+    cmd = { "MarkdownPreview", "MarkdownPreviewStop" },
+    build = function()
+    vim.fn["mkdp#util#install"]()
+    end,
+  },
+  { "bluz71/vim-nightfly-colors", name = "nightfly", lazy = false, priority = 1000 },
+  {
+    "chipsenkbeil/distant.nvim",
+    branch = 'v0.2'
+  },
+  {
+   'ldelossa/litee.nvim'
+  },
+  {
+    'projekt0n/github-nvim-theme',
+    lazy = false, -- make sure we load this during startup if it is your main colorscheme
+    priority = 1000, -- make sure to load this before all the other start plugins
+    config = function()
+      require('github-theme').setup({
+        -- ...
+      })
+  
+      vim.cmd('colorscheme github_dark')
+    end,
+  }
+  
+  
+    
+  -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
+  --       These are some example plugins that I've included in the kickstart repository.
+  --       Uncomment any of the lines below to enable them.
+  -- require 'kickstart.plugins.autoformat',
+  -- require 'kickstart.plugins.debug',
+
+  -- NOTE: The import below automatically adds your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
+  --    You can use this folder to prevent any conflicts with this init.lua if you're interested in keeping
+  --    up-to-date with whatever is in the kickstart repo.
+  --
+  --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
+  --
+  --    An additional note is that if you only copied in the `init.lua`, you can just comment this line
+  --    to get rid of the warning telling you that there are not plugins in `lua/custom/plugins/`.
+  -- { import = 'custom.plugins' },
+}, {})
+
+-- Custom settings for Nvim-tree
+-- examples for your init.lua
 
 -- disable netrw at the very start of your init.lua (strongly advised)
 vim.g.loaded_netrw = 1
@@ -91,17 +283,50 @@ vim.opt.termguicolors = true
 
 require("trouble").setup({})
 
-require("kanagawa").setup({
-    transparent = true
+require('distant').setup({
+  ['*'] = require('distant.settings').chip_default()
 })
 
-vim.cmd("colorscheme kanagawa")
+function leave_snippet()
+    if
+        ((vim.v.event.old_mode == 's' and vim.v.event.new_mode == 'n') or vim.v.event.old_mode == 'i')
+        and require('luasnip').session.current_nodes[vim.api.nvim_get_current_buf()]
+        and not require('luasnip').session.jump_active
+    then
+        require('luasnip').unlink_current()
+    end
+end
+
+-- stop snippets when you leave to normal mode
+vim.api.nvim_command([[
+    autocmd ModeChanged * lua leave_snippet()
+]])
+
+
+require("kanagawa").setup({})
+
+require('lazy').setup({
+  {
+    'https://github.com/adelarsq/neovcs.vim',
+    keys = {
+      '<leader>v',
+    },
+    config = function ()
+        require('neovcs').setup()
+    end
+   },
+}, {})
+
+vim.cmd("colorscheme github_dark")
 
 vim.api.nvim_set_option("clipboard","unnamed")
 
 vim.cmd("set number")
 
 require("nvim-web-devicons").setup({})
+
+require("litee.lib").setup({})
+-- require('litee.gh"').setup({})
 
 require("prettier").setup({
   bin = 'prettier', -- or `'prettierd'` (v0.23.3+)
@@ -121,6 +346,7 @@ require("prettier").setup({
   },
 })
 
+-- OR setup with some options
 require("nvim-tree").setup({
   -- open_on_setup = true, -- TODO: If you open a file the nvim location wont change
   sort_by = "case_sensitive",
@@ -128,18 +354,24 @@ require("nvim-tree").setup({
     group_empty = true,
   },
   filters = {
-    dotfiles = false,
+    dotfiles = true,
   },
   view = {
-    width = 40,
+    width = 30,
     side = "left"
   }
 })
 
 require("nvim-tree.api").tree.open();
 
+-- [[ Setting options ]]
+-- See `:help vim.o`
+
 -- Set highlight on search
 vim.o.hlsearch = false
+
+-- Disable editorconfig parsing
+vim.g.editorconfig = false
 
 -- Make line numbers default
 vim.wo.number = true
@@ -197,15 +429,6 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   pattern = '*',
 })
 
--- TODO: this gives random errors
--- Close the buffer when the file is simply closed
--- vim.api.nvim_create_autocmd('WinClosed', {
---   callback = function(tbl)
---     vim.api.nvim_command('BufferClose ' .. tbl.buf)
---   end,
---   group = vim.api.nvim_create_augroup('barbar_close_buf', {})
--- })
-
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
 require('telescope').setup {
@@ -238,7 +461,6 @@ vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc
 vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
 vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
-vim.keymap.set('n', '<leader>ss', require('telescope.builtin').git_status, { desc = '[S]earch [S]tatus' })
 
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
@@ -387,11 +609,6 @@ capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 -- Setup mason so it can manage external tooling
 require('mason').setup()
-
-require('notify').setup()
-
--- Use the notifier
-vim.notify = require("notify")
 
 -- Ensure the servers above are installed
 local mason_lspconfig = require 'mason-lspconfig'
