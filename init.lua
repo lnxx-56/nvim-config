@@ -91,11 +91,11 @@ vim.opt.termguicolors = true
 
 require("trouble").setup({})
 
-require("kanagawa").setup({
+require("gruvbox").setup({
     transparent = true
-})
+});
 
-vim.cmd("colorscheme kanagawa")
+vim.cmd("colorscheme gruvbox")
 
 vim.api.nvim_set_option("clipboard","unnamed")
 
@@ -228,8 +228,13 @@ vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { d
 vim.keymap.set('n', '<leader>/', function()
   -- You can pass additional configuration to telescope to change theme, layout, etc.
   require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
-    winblend = 10,
+    winblend = 5,
     previewer = false,
+    layout_config = {
+      width = 0.8,  -- Increase width to 80% of the screen
+      height = 0.6, -- Increase height to 60% of the screen
+      prompt_position = "top"
+    }
   })
 end, { desc = '[/] Fuzzily search in current buffer' })
 
