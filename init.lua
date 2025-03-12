@@ -95,7 +95,7 @@ require("gruvbox").setup({
     transparent = true
 });
 
-vim.cmd("colorscheme gruvbox")
+vim.cmd("colorscheme github_dark")
 
 vim.api.nvim_set_option("clipboard","unnamed")
 
