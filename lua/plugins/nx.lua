@@ -1,8 +1,8 @@
 -- use the original repository when the pr is merged!!!
--- "Equilibris/nx.nvim",
+-- "Equilibris/nx.nvim", -- I think it is merged already
 return {
   {
-    "Sewb21/nx.nvim",
+    "Equilibris/nx.nvim",
 
     lazy = false,
     dependencies = {
