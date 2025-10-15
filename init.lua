@@ -372,7 +372,7 @@ local servers = {
   -- gopls = {},
   -- pyright = {},
   -- rust_analyzer = {},
-  tsserver = {},
+  ts_ls = {},
   angularls = {},
 
   lua_ls = {
