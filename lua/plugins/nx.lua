@@ -1,10 +1,11 @@
 -- use the original repository when the pr is merged!!!
--- "Equilibris/nx.nvim", -- I think it is merged already
+-- "Equilibris/nx.nvim",
 return {
   {
-    "Equilibris/nx.nvim",
+    "gnikolaos/nx.nvim", 
 
     lazy = false,
+    branch = "fix/read-configs",
     dependencies = {
       "nvim-telescope/telescope.nvim",
     },

@@ -78,6 +78,11 @@ require("bufferline").setup{}
 --   }
 -- }
 
+-- CODECOMPANION SETUP
+
+-- Configure in your setup
+require("codecompanion").setup({})
+
 require('ibl').setup{};
 
 --require("dapui").setup({})
@@ -91,11 +96,11 @@ vim.opt.termguicolors = true
 
 require("trouble").setup({})
 
-require("gruvbox").setup({
+require("onenord").setup({
     transparent = true
 });
 
-vim.cmd("colorscheme github_dark")
+-- vim.cmd("colorscheme github_dark")
 
 vim.api.nvim_set_option("clipboard","unnamed")
 
@@ -249,7 +254,7 @@ vim.keymap.set('n', '<leader>ss', require('telescope.builtin').git_status, { des
 -- See `:help nvim-treesitter`
 require('nvim-treesitter.configs').setup {
   -- Add languages to be installed here that you want installed for treesitter
-  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'typescript', 'vimdoc', 'vim' },
+  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'typescript', 'vimdoc', 'vim', 'lua', 'markdown', 'yaml', 'json', 'bash' },
 
   -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
   auto_install = false,
